@@ -27,6 +27,8 @@ class FriendlyErrorsWebpackPlugin {
 
   constructor(options) {
     options = options || {};
+    this.showSuccessInfo = options.showSuccessInfo == null ? true : Boolean(options.showSuccessInfo);
+    this.showCompilingInfo = options.showCompilingInfo == null ? true : Boolean(options.showCompilingInfo);
     this.compilationSuccessInfo = options.compilationSuccessInfo || {};
     this.onErrors = options.onErrors;
     this.shouldClearConsole = options.clearConsole == null ? true : Boolean(options.clearConsole);
@@ -59,8 +61,10 @@ class FriendlyErrorsWebpackPlugin {
     };
 
     const invalidFn = () => {
-      this.clearConsole();
-      output.title('info', 'WAIT', 'Compiling...');
+      if(this.showCompilingInfo) {
+        this.clearConsole();
+        output.title('info', 'WAIT', 'Compiling...');
+      }
     };
 
     if (compiler.hooks) {
@@ -81,15 +85,17 @@ class FriendlyErrorsWebpackPlugin {
   }
 
   displaySuccess(stats) {
-    const time = isMultiStats(stats) ? this.getMultiStatsCompileTime(stats) : this.getStatsCompileTime(stats);
-    output.title('success', 'DONE', 'Compiled successfully in ' + time + 'ms');
-
-    if (this.compilationSuccessInfo.messages) {
-      this.compilationSuccessInfo.messages.forEach(message => output.info(message));
-    }
-    if (this.compilationSuccessInfo.notes) {
-      output.log();
-      this.compilationSuccessInfo.notes.forEach(note => output.note(note));
+    if(this.showSuccessInfo) {
+      const time = isMultiStats(stats) ? this.getMultiStatsCompileTime(stats) : this.getStatsCompileTime(stats);
+      output.title('success', 'DONE', 'Compiled successfully in ' + time + 'ms');
+  
+      if (this.compilationSuccessInfo.messages) {
+        this.compilationSuccessInfo.messages.forEach(message => output.info(message));
+      }
+      if (this.compilationSuccessInfo.notes) {
+        output.log();
+        this.compilationSuccessInfo.notes.forEach(note => output.note(note));
+      }
     }
   }
 

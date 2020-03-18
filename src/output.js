@@ -1,5 +1,7 @@
 'use strict';
 
+const stripAnsi = require('strip-ansi');
+
 const colors = require('./utils/colors');
 const chalk = require('chalk');
 const stringWidth = require('string-width');
@@ -98,7 +100,7 @@ class Debugger {
 
   captureConsole (args, method) {
     if (this.capturing) {
-      this.capturedMessages.push(chalk.stripColor(args.join(' ')).trim());
+      this.capturedMessages.push(stripAnsi(args.join(' ')).trim());
     } else {
       method.apply(console, args);
     }
